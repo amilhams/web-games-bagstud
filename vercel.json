@@ -2,6 +2,10 @@
   "cleanUrls": true,
   "rewrites": [
     { "source": "/", "destination": "/love-match/index.html" },
-    { "source": "/spin", "destination": "/love-match/spin/bagstud-spin.html" }
+    { "source": "/css/:path*", "destination": "/love-match/css/:path*" },
+    { "source": "/js/:path*", "destination": "/love-match/js/:path*" },
+    { "source": "/card/:path*", "destination": "/love-match/card/:path*" },
+    { "source": "/video/:path*", "destination": "/love-match/video/:path*" },
+    { "source": "/spin/:path*", "destination": "/love-match/spin/:path*" }
   ]
 }
