@@ -2,6 +2,29 @@
    LOVE MATCH CALCULATOR STYLES - BAHAGIA STUDIO STYLE HARMONY
    ========================================================================== */
 
+:root {
+  --bg-dark: #0a0e1a;
+  --bg-navy-card: rgba(15, 23, 42, 0.85);
+  --text-light: #f8fafc;
+  --text-muted-light: #94a3b8;
+  --accent-gold: #c5a059;
+  --accent-gold-hover: #dfb76c;
+  --accent-gold-light: #e8d5b5;
+  --accent-gold-glow: rgba(197, 160, 89, 0.3);
+  --border-gold: rgba(197, 160, 89, 0.3);
+  --glass-border: rgba(197, 160, 89, 0.2);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  --shadow-gold: 0 10px 30px -5px rgba(197, 160, 89, 0.15);
+  --transition-fast: all 0.2s ease;
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-serif: 'Cinzel', serif;
+}
+
 /* Layout & Container */
 .match-page {
   min-height: 100vh;
