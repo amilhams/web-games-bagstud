@@ -7,8 +7,8 @@ export function calculateCompatibility(nameA, nameB) {
     const seed = hashString(pair);
     const prng = createPRNG(seed);
 
-    // 1. Skor Utama Deterministik dalam rentang 50% - 99% (Batas bawah 50%)
-    const finalScore = Math.floor(prng() * 50) + 50;
+    // 1. Skor Utama Deterministik dalam rentang 55% - 99% (Nilai Minimal 55%)
+    const finalScore = Math.floor(prng() * 45) + 55;
 
     // Helper untuk menghasilkan variasi alami di sekitar finalScore (selalu di antara 50% - 99%)
     const getDimScore = () => {

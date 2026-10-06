@@ -139,16 +139,18 @@ document.addEventListener('DOMContentLoaded', () => {
             matchVideo.currentTime = 0;
             matchVideo.play();
 
-            // Atur posisi top & left overlay video sesuai tier
+            // Atur posisi top, left, width & height overlay video sesuai tier
             videoScoreOverlay.style.top = `${tierInfo.videoTopPercent}%`;
             videoScoreOverlay.style.left = `${tierInfo.videoLeftPercent || 51.5}%`;
+            if (tierInfo.videoWidthPercent) videoScoreOverlay.style.width = `${tierInfo.videoWidthPercent}%`;
+            if (tierInfo.videoHeightPercent) videoScoreOverlay.style.height = `${tierInfo.videoHeightPercent}%`;
             videoPairNames.textContent = `${nameA.toUpperCase()} × ${nameB.toUpperCase()}`;
 
             // Handler Detik ke-5.0 pada Video Tier
             const onTimeUpdate = () => {
                 if (matchVideo.currentTime >= 5.0 && !overlayTriggered) {
                     overlayTriggered = true;
-                    videoScoreOverlay.style.display = 'block';
+                    videoScoreOverlay.style.display = 'flex';
                     animateScoreText(videoScoreNumber, result.finalScore);
                 }
             };

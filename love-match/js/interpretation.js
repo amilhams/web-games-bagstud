@@ -6,7 +6,10 @@ export function getScoreTier(score) {
             badge: "Extraordinary Connection",
             video: "video/tier/Video 4.mp4",
             cardImg: "card/tier 4.png",
-            videoTopPercent: 8.0, videoLeftPercent: 50.5
+            videoTopPercent: 8.5,
+            videoLeftPercent: 50.5,
+            videoWidthPercent: 10.5,
+            videoHeightPercent: 16.5
         };
     } else if (score >= 75) {
         return {
@@ -15,7 +18,10 @@ export function getScoreTier(score) {
             badge: "Strong Connection",
             video: "video/tier/Video 3.mp4",
             cardImg: "card/tier 3.png",
-            videoTopPercent: 5.0, videoLeftPercent: 59.0
+            videoTopPercent: 4.5,
+            videoLeftPercent: 58.0,
+            videoWidthPercent: 10.5,
+            videoHeightPercent: 16.5
         };
     } else if (score >= 63) {
         return {
@@ -24,8 +30,11 @@ export function getScoreTier(score) {
             badge: "Something Is There",
             video: "video/tier/Video 2.mp4",
             cardImg: "card/tier 2.png",
-            cardTopPercent: 16.5,
-            videoTopPercent: 9.0, videoLeftPercent: 50.5
+            videoTopPercent: 8.5,
+            videoLeftPercent: 50.5,
+            videoWidthPercent: 12.5,
+            videoHeightPercent: 16.0
+
         };
     } else {
         return {
@@ -34,9 +43,10 @@ export function getScoreTier(score) {
             badge: "Curious Chemistry",
             video: "video/tier/Video 1.mp4",
             cardImg: "card/tier 1.png",
-            cardTopPercent: 22.0,
-            videoTopPercent: 9.0,
-            videoLeftPercent: 50.5
+            videoTopPercent: 8.0,
+            videoLeftPercent: 50.5,
+            videoWidthPercent: 11.0,
+            videoHeightPercent: 17.5
         };
     }
 }

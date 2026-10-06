@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔧 Debug Overlay – Love Match</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cardo:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0a0f1a; color: #e2e8f0; min-height: 100vh; }
+
+    .debug-header {
+      background: linear-gradient(135deg, #1a2740, #0f1c2e);
+      border-bottom: 2px solid #c5a059;
+      padding: 1rem 1.5rem;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .debug-header h1 { font-size: 1.1rem; color: #c5a059; }
+    .debug-header span { font-size: 0.8rem; color: #94a3b8; }
+
+    .tier-tabs {
+      display: flex; background: #0d1520;
+      border-bottom: 1px solid #1e3050; overflow-x: auto;
+    }
+    .tab-btn {
+      padding: 0.75rem 1.4rem; background: none; border: none;
+      color: #64748b; font-family: inherit; font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; white-space: nowrap;
+    }
+    .tab-btn:hover { color: #c5a059; background: rgba(197,160,89,0.05); }
+    .tab-btn.active { color: #c5a059; border-bottom-color: #c5a059; background: rgba(197,160,89,0.08); }
+
+    .tier-panel { display: none; padding: 1.5rem; }
+    .tier-panel.active { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 900px) { .tier-panel.active { grid-template-columns: 1fr; } }
+
+    .section-box { background: #111d2e; border: 1px solid #1e3050; border-radius: 12px; overflow: hidden; }
+    .section-title {
+      background: #0d1828; padding: 0.75rem 1rem;
+      font-size: 0.78rem; font-weight: 700; color: #c5a059;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      border-bottom: 1px solid #1e3050;
+    }
+    .section-body { padding: 1rem; }
+
+    /* Card preview */
+    .card-preview-wrap {
+      position: relative; width: 100%; max-width: 280px;
+      margin: 0 auto; border-radius: 8px; overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+    .card-preview-wrap img { width: 100%; height: auto; display: block; }
+
+    .card-overlay-debug {
+      position: absolute; transform: translateX(-50%);
+      text-align: center; font-family: 'Cardo', serif; color: #1e2836;
+      z-index: 10; pointer-events: none;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      border: 2px dashed rgba(220, 38, 38, 0.8);
+      background: rgba(255,255,255,0.15); border-radius: 4px;
+    }
+    .card-overlay-score { font-weight: 700; color: #1e2836; line-height: 1; }
+    .card-overlay-names { font-weight: 600; margin-top: 0.1rem; color: #384454; letter-spacing: 0.04em; }
+
+    /* Controls */
+    .controls { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.55rem; }
+    .control-row { display: flex; align-items: center; gap: 0.75rem; }
+    .control-row label { font-size: 0.72rem; color: #94a3b8; width: 60px; flex-shrink: 0; }
+    .control-row input[type="range"] { flex: 1; accent-color: #c5a059; cursor: pointer; }
+    .control-row .val { font-size: 0.72rem; font-weight: 700; color: #c5a059; width: 55px; text-align: right; font-family: monospace; }
+    .copy-btn {
+      width: 100%; margin-top: 0.4rem; padding: 0.55rem;
+      background: linear-gradient(135deg, #c5a059, #a67c33);
+      color: #0a1118; border: none; border-radius: 8px;
+      font-family: inherit; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s;
+    }
+    .copy-btn:hover { opacity: 0.85; }
+    .css-output {
+      margin-top: 0.4rem; background: #0a0f1a; border: 1px solid #1e3050;
+      border-radius: 6px; padding: 0.55rem 0.7rem;
+      font-family: monospace; font-size: 0.68rem; color: #7dd3fc;
+      white-space: pre; line-height: 1.6;
+    }
+
+    /* Video */
+    .video-wrap { position: relative; background: #000; border-radius: 8px; overflow: hidden; }
+    .video-wrap video { width: 100%; height: auto; display: block; }
+    .video-overlay-debug {
+      position: absolute; transform: translateX(-50%);
+      text-align: center; font-family: 'Cardo', serif; color: #2b3542; pointer-events: none;
+      border: 2px dashed rgba(220, 38, 38, 0.8);
+      background: rgba(255,255,255,0.18); border-radius: 4px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .video-overlay-score { font-size: 1.6rem; font-weight: 700; color: #232c38; line-height: 1; }
+    .video-overlay-names { font-size: 0.65rem; color: #3b4756; margin-top: 0.15rem; }
+    .vid-row { display: flex; gap: 0.5rem; margin-top: 0.6rem; }
+    .vid-btn {
+      flex: 1; padding: 0.45rem; background: #1a2740; border: 1px solid #2a3f68;
+      color: #e2e8f0; border-radius: 6px; font-family: inherit; font-size: 0.75rem;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .vid-btn:hover { background: #243558; }
+    .time-disp { text-align: center; font-family: monospace; font-size: 0.8rem; color: #c5a059; margin-top: 0.4rem; }
+  </style>
+</head>
+<body>
+
+<div class="debug-header">
+  <h1>🔧 Debug Overlay Tool — Love Match</h1>
+  <span>Geser slider → overlay menyesuaikan realtime → klik Salin CSS → tempel ke style.css / interpretation.js</span>
+</div>
+
+<div class="tier-tabs">
+  <button class="tab-btn active" onclick="switchTab(1)">Tier 1 — Different Paths</button>
+  <button class="tab-btn" onclick="switchTab(2)">Tier 2 — Growing Closer</button>
+  <button class="tab-btn" onclick="switchTab(3)">Tier 3 — A Rare Match</button>
+  <button class="tab-btn" onclick="switchTab(4)">Tier 4 — In Perfect Sync</button>
+</div>
+
+<!-- TIER 1 -->
+<div id="panel-1" class="tier-panel active">
+  <div class="section-box">
+    <div class="section-title">🃏 Card · Tier 1 · Different Paths · tier 1.png</div>
+    <div class="section-body">
+      <div class="card-preview-wrap">
+        <img src="card/tier 1.png" alt="Tier 1">
+        <div class="card-overlay-debug" id="co-1" style="top:15.7%;left:49.5%;height:16.8%;width:34%;font-size:1rem;">
+          <div class="card-overlay-score" style="font-size:1.3em;">55%</div>
+          <div class="card-overlay-names" style="font-size:0.5em;">TEST × NAME</div>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="control-row"><label>Top</label><input type="range" min="0" max="50" step="0.1" value="15.7" oninput="updCard(1,'top',this.value)"><span class="val" id="c1-top">15.7%</span></div>
+        <div class="control-row"><label>Left</label><input type="range" min="30" max="70" step="0.5" value="49.5" oninput="updCard(1,'left',this.value)"><span class="val" id="c1-left">49.5%</span></div>
+        <div class="control-row"><label>Height</label><input type="range" min="5" max="35" step="0.1" value="16.8" oninput="updCard(1,'height',this.value)"><span class="val" id="c1-height">16.8%</span></div>
+        <div class="control-row"><label>Width</label><input type="range" min="10" max="80" step="0.5" value="34" oninput="updCard(1,'width',this.value)"><span class="val" id="c1-width">34.0%</span></div>
+        <div class="control-row"><label>Font Size</label><input type="range" min="0.5" max="2.5" step="0.05" value="1" oninput="updCard(1,'fontSize',this.value)"><span class="val" id="c1-fontSize">1.00rem</span></div>
+        <button class="copy-btn" onclick="copyCard(1)">📋 Salin CSS Card</button>
+        <div class="css-output" id="css-c1">.card-wrapper[data-tier="1"] .card-score-overlay {
+  top: 15.7%; left: 49.5%; height: 16.8%; width: 34.0%; font-size: 1.00rem;
+}</div>
+      </div>
+    </div>
+  </div>
+  <div class="section-box">
+    <div class="section-title">🎬 Video · Tier 1 · Video 1.mp4 · auto-pause @ detik 5</div>
+    <div class="section-body">
+      <div class="video-wrap">
+        <video id="vid-1" src="video/tier/Video 1.mp4" preload="metadata"></video>
+        <div class="video-overlay-debug" id="vo-1" style="top:11.5%;left:51.5%;width:22%;height:16%;">
+          <div class="video-overlay-score">55%</div>
+          <div class="video-overlay-names">TEST × NAME</div>
+        </div>
+      </div>
+      <div class="vid-row">
+        <button class="vid-btn" onclick="goSec(1,5)">⏱ Ke Detik 5</button>
+        <button class="vid-btn" onclick="pp(1)">▶ Play / Pause</button>
+        <button class="vid-btn" onclick="goSec(1,0)">⏮ Reset</button>
+      </div>
+      <div class="time-disp" id="td-1">00:00.000</div>
+      <div class="controls" style="margin-top:.6rem">
+        <div class="control-row"><label>Top</label><input type="range" min="0" max="60" step="0.5" value="11.5" oninput="updVid(1,'top',this.value)"><span class="val" id="v1-top">11.5%</span></div>
+        <div class="control-row"><label>Left</label><input type="range" min="20" max="80" step="0.5" value="51.5" oninput="updVid(1,'left',this.value)"><span class="val" id="v1-left">51.5%</span></div>
+        <div class="control-row"><label>Width</label><input type="range" min="10" max="50" step="0.5" value="22" oninput="updVid(1,'width',this.value)"><span class="val" id="v1-width">22.0%</span></div>
+        <div class="control-row"><label>Height</label><input type="range" min="5" max="40" step="0.5" value="16" oninput="updVid(1,'height',this.value)"><span class="val" id="v1-height">16.0%</span></div>
+        <button class="copy-btn" onclick="copyVid(1)">📋 Salin Nilai Video Overlay</button>
+        <div class="css-output" id="css-v1">videoTopPercent: 11.5, videoLeftPercent: 51.5
+width: 22.0%, height: 16.0%</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TIER 2 -->
+<div id="panel-2" class="tier-panel">
+  <div class="section-box">
+    <div class="section-title">🃏 Card · Tier 2 · Growing Closer · tier 2.png</div>
+    <div class="section-body">
+      <div class="card-preview-wrap">
+        <img src="card/tier 2.png" alt="Tier 2">
+        <div class="card-overlay-debug" id="co-2" style="top:13%;left:50%;height:12.7%;width:34%;font-size:1rem;">
+          <div class="card-overlay-score" style="font-size:1.3em;">67%</div>
+          <div class="card-overlay-names" style="font-size:0.5em;">TEST × NAME</div>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="control-row"><label>Top</label><input type="range" min="0" max="50" step="0.1" value="13" oninput="updCard(2,'top',this.value)"><span class="val" id="c2-top">13.0%</span></div>
+        <div class="control-row"><label>Left</label><input type="range" min="30" max="70" step="0.5" value="50" oninput="updCard(2,'left',this.value)"><span class="val" id="c2-left">50.0%</span></div>
+        <div class="control-row"><label>Height</label><input type="range" min="5" max="35" step="0.1" value="12.7" oninput="updCard(2,'height',this.value)"><span class="val" id="c2-height">12.7%</span></div>
+        <div class="control-row"><label>Width</label><input type="range" min="10" max="80" step="0.5" value="34" oninput="updCard(2,'width',this.value)"><span class="val" id="c2-width">34.0%</span></div>
+        <div class="control-row"><label>Font Size</label><input type="range" min="0.5" max="2.5" step="0.05" value="1" oninput="updCard(2,'fontSize',this.value)"><span class="val" id="c2-fontSize">1.00rem</span></div>
+        <button class="copy-btn" onclick="copyCard(2)">📋 Salin CSS Card</button>
+        <div class="css-output" id="css-c2">.card-wrapper[data-tier="2"] .card-score-overlay {
+  top: 13.0%; left: 50.0%; height: 12.7%; width: 34.0%; font-size: 1.00rem;
+}</div>
+      </div>
+    </div>
+  </div>
+  <div class="section-box">
+    <div class="section-title">🎬 Video · Tier 2 · Video 2.mp4 · auto-pause @ detik 5</div>
+    <div class="section-body">
+      <div class="video-wrap">
+        <video id="vid-2" src="video/tier/Video 2.mp4" preload="metadata"></video>
+        <div class="video-overlay-debug" id="vo-2" style="top:13.5%;left:51.5%;width:22%;height:16%;">
+          <div class="video-overlay-score">67%</div>
+          <div class="video-overlay-names">TEST × NAME</div>
+        </div>
+      </div>
+      <div class="vid-row">
+        <button class="vid-btn" onclick="goSec(2,5)">⏱ Ke Detik 5</button>
+        <button class="vid-btn" onclick="pp(2)">▶ Play / Pause</button>
+        <button class="vid-btn" onclick="goSec(2,0)">⏮ Reset</button>
+      </div>
+      <div class="time-disp" id="td-2">00:00.000</div>
+      <div class="controls" style="margin-top:.6rem">
+        <div class="control-row"><label>Top</label><input type="range" min="0" max="60" step="0.5" value="13.5" oninput="updVid(2,'top',this.value)"><span class="val" id="v2-top">13.5%</span></div>
+        <div class="control-row"><label>Left</label><input type="range" min="20" max="80" step="0.5" value="51.5" oninput="updVid(2,'left',this.value)"><span class="val" id="v2-left">51.5%</span></div>
+        <div class="control-row"><label>Width</label><input type="range" min="10" max="50" step="0.5" value="22" oninput="updVid(2,'width',this.value)"><span class="val" id="v2-width">22.0%</span></div>
+        <div class="control-row"><label>Height</label><input type="range" min="5" max="40" step="0.5" value="16" oninput="updVid(2,'height',this.value)"><span class="val" id="v2-height">16.0%</span></div>
+        <button class="copy-btn" onclick="copyVid(2)">📋 Salin Nilai Video Overlay</button>
+        <div class="css-output" id="css-v2">videoTopPercent: 13.5, videoLeftPercent: 51.5
+width: 22.0%, height: 16.0%</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TIER 3 -->
+<div id="panel-3" class="tier-panel">
+  <div class="section-box">
+    <div class="section-title">🃏 Card · Tier 3 · A Rare Match · tier 3.png</div>
+    <div class="section-body">
+      <div class="card-preview-wrap">
+        <img src="card/tier 3.png" alt="Tier 3">
+        <div class="card-overlay-debug" id="co-3" style="top:7.1%;left:63%;height:14.5%;width:34%;font-size:1rem;">
+          <div class="card-overlay-score" style="font-size:1.3em;">80%</div>
+          <div class="card-overlay-names" style="font-size:0.5em;">TEST × NAME</div>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="control-row"><label>Top</label><input type="range" min="0" max="50" step="0.1" value="7.1" oninput="updCard(3,'top',this.value)"><span class="val" id="c3-top">7.1%</span></div>
+        <div class="control-row"><label>Left</label><input type="range" min="30" max="70" step="0.5" value="63" oninput="updCard(3,'left',this.value)"><span class="val" id="c3-left">63.0%</span></div>
+        <div class="control-row"><label>Height</label><input type="range" min="5" max="35" step="0.1" value="14.5" oninput="updCard(3,'height',this.value)"><span class="val" id="c3-height">14.5%</span></div>
+        <div class="control-row"><label>Width</label><input type="range" min="10" max="80" step="0.5" value="34" oninput="updCard(3,'width',this.value)"><span class="val" id="c3-width">34.0%</span></div>
+        <div class="control-row"><label>Font Size</label><input type="range" min="0.5" max="2.5" step="0.05" value="1" oninput="updCard(3,'fontSize',this.value)"><span class="val" id="c3-fontSize">1.00rem</span></div>
+        <button class="copy-btn" onclick="copyCard(3)">📋 Salin CSS Card</button>
+        <div class="css-output" id="css-c3">.card-wrapper[data-tier="3"] .card-score-overlay {
+  top: 7.1%; left: 63.0%; height: 14.5%; width: 34.0%; font-size: 1.00rem;
+}</div>
+      </div>
+    </div>
+  </div>
+  <div class="section-box">
+    <div class="section-title">🎬 Video · Tier 3 · Video 3.mp4 · auto-pause @ detik 5</div>
+    <div class="section-body">
+      <div class="video-wrap">
+        <video id="vid-3" src="video/tier/Video 3.mp4" preload="metadata"></video>
+        <div class="video-overlay-debug" id="vo-3" style="top:15.5%;left:51.5%;width:22%;height:16%;">
+          <div class="video-overlay-score">80%</div>
+          <div class="video-overlay-names">TEST × NAME</div>
+        </div>
+      </div>
+      <div class="vid-row">
+        <button class="vid-btn" onclick="goSec(3,5)">⏱ Ke Detik 5</button>
+        <button class="vid-btn" onclick="pp(3)">▶ Play / Pause</button>
+        <button class="vid-btn" onclick="goSec(3,0)">⏮ Reset</button>
+      </div>
+      <div class="time-disp" id="td-3">00:00.000</div>
+      <div class="controls" style="margin-top:.6rem">
+        <div class="control-row"><label>Top</label><input type="range" min="0" max="60" step="0.5" value="15.5" oninput="updVid(3,'top',this.value)"><span class="val" id="v3-top">15.5%</span></div>
+        <div class="control-row"><label>Left</label><input type="range" min="20" max="80" step="0.5" value="51.5" oninput="updVid(3,'left',this.value)"><span class="val" id="v3-left">51.5%</span></div>
+        <div class="control-row"><label>Width</label><input type="range" min="10" max="50" step="0.5" value="22" oninput="updVid(3,'width',this.value)"><span class="val" id="v3-width">22.0%</span></div>
+        <div class="control-row"><label>Height</label><input type="range" min="5" max="40" step="0.5" value="16" oninput="updVid(3,'height',this.value)"><span class="val" id="v3-height">16.0%</span></div>
+        <button class="copy-btn" onclick="copyVid(3)">📋 Salin Nilai Video Overlay</button>
+        <div class="css-output" id="css-v3">videoTopPercent: 15.5, videoLeftPercent: 51.5
+width: 22.0%, height: 16.0%</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TIER 4 -->
+<div id="panel-4" class="tier-panel">
+  <div class="section-box">
+    <div class="section-title">🃏 Card · Tier 4 · In Perfect Sync · tier 4.png</div>
+    <div class="section-body">
+      <div class="card-preview-wrap">
+        <img src="card/tier 4.png" alt="Tier 4">
+        <div class="card-overlay-debug" id="co-4" style="top:8.5%;left:50%;height:15.5%;width:34%;font-size:1rem;">
+          <div class="card-overlay-score" style="font-size:1.3em;">92%</div>
+          <div class="card-overlay-names" style="font-size:0.5em;">TEST × NAME</div>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="control-row"><label>Top</label><input type="range" min="0" max="50" step="0.1" value="8.5" oninput="updCard(4,'top',this.value)"><span class="val" id="c4-top">8.5%</span></div>
+        <div class="control-row"><label>Left</label><input type="range" min="30" max="70" step="0.5" value="50" oninput="updCard(4,'left',this.value)"><span class="val" id="c4-left">50.0%</span></div>
+        <div class="control-row"><label>Height</label><input type="range" min="5" max="35" step="0.1" value="15.5" oninput="updCard(4,'height',this.value)"><span class="val" id="c4-height">15.5%</span></div>
+        <div class="control-row"><label>Width</label><input type="range" min="10" max="80" step="0.5" value="34" oninput="updCard(4,'width',this.value)"><span class="val" id="c4-width">34.0%</span></div>
+        <div class="control-row"><label>Font Size</label><input type="range" min="0.5" max="2.5" step="0.05" value="1" oninput="updCard(4,'fontSize',this.value)"><span class="val" id="c4-fontSize">1.00rem</span></div>
+        <button class="copy-btn" onclick="copyCard(4)">📋 Salin CSS Card</button>
+        <div class="css-output" id="css-c4">.card-wrapper[data-tier="4"] .card-score-overlay {
+  top: 8.5%; left: 50.0%; height: 15.5%; width: 34.0%; font-size: 1.00rem;
+}</div>
+      </div>
+    </div>
+  </div>
+  <div class="section-box">
+    <div class="section-title">🎬 Video · Tier 4 · Video 4.mp4 · auto-pause @ detik 5</div>
+    <div class="section-body">
+      <div class="video-wrap">
+        <video id="vid-4" src="video/tier/Video 4.mp4" preload="metadata"></video>
+        <div class="video-overlay-debug" id="vo-4" style="top:18%;left:51.5%;width:22%;height:16%;">
+          <div class="video-overlay-score">92%</div>
+          <div class="video-overlay-names">TEST × NAME</div>
+        </div>
+      </div>
+      <div class="vid-row">
+        <button class="vid-btn" onclick="goSec(4,5)">⏱ Ke Detik 5</button>
+        <button class="vid-btn" onclick="pp(4)">▶ Play / Pause</button>
+        <button class="vid-btn" onclick="goSec(4,0)">⏮ Reset</button>
+      </div>
+      <div class="time-disp" id="td-4">00:00.000</div>
+      <div class="controls" style="margin-top:.6rem">
+        <div class="control-row"><label>Top</label><input type="range" min="0" max="60" step="0.5" value="18" oninput="updVid(4,'top',this.value)"><span class="val" id="v4-top">18.0%</span></div>
+        <div class="control-row"><label>Left</label><input type="range" min="20" max="80" step="0.5" value="51.5" oninput="updVid(4,'left',this.value)"><span class="val" id="v4-left">51.5%</span></div>
+        <div class="control-row"><label>Width</label><input type="range" min="10" max="50" step="0.5" value="22" oninput="updVid(4,'width',this.value)"><span class="val" id="v4-width">22.0%</span></div>
+        <div class="control-row"><label>Height</label><input type="range" min="5" max="40" step="0.5" value="16" oninput="updVid(4,'height',this.value)"><span class="val" id="v4-height">16.0%</span></div>
+        <button class="copy-btn" onclick="copyVid(4)">📋 Salin Nilai Video Overlay</button>
+        <div class="css-output" id="css-v4">videoTopPercent: 18.0, videoLeftPercent: 51.5
+width: 22.0%, height: 16.0%</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Tab switch
+  function switchTab(n) {
+    document.querySelectorAll('.tier-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + n).classList.add('active');
+    document.querySelectorAll('.tab-btn')[n - 1].classList.add('active');
+  }
+
+  // Card state
+  const cs = {
+    1: {top:15.7, left:49.5, height:16.8, width:34, fontSize:1.0},
+    2: {top:13.0, left:50.0, height:12.7, width:34, fontSize:1.0},
+    3: {top:7.1,  left:63.0, height:14.5, width:34, fontSize:1.0},
+    4: {top:8.5,  left:50.0, height:15.5, width:34, fontSize:1.0}
+  };
+
+  function updCard(t, p, v) {
+    v = parseFloat(v); cs[t][p] = v;
+    const el = document.getElementById('co-' + t);
+    el.style.top = cs[t].top + '%';
+    el.style.left = cs[t].left + '%';
+    el.style.height = cs[t].height + '%';
+    el.style.width = cs[t].width + '%';
+    el.style.fontSize = cs[t].fontSize + 'rem';
+    
+    if (p === 'fontSize') {
+      document.getElementById('c' + t + '-' + p).textContent = v.toFixed(2) + 'rem';
+    } else {
+      document.getElementById('c' + t + '-' + p).textContent = v.toFixed(1) + '%';
+    }
+
+    const s = cs[t];
+    document.getElementById('css-c' + t).textContent =
+      `.card-wrapper[data-tier="${t}"] .card-score-overlay {\n  top: ${s.top.toFixed(1)}%; left: ${s.left.toFixed(1)}%; height: ${s.height.toFixed(1)}%; width: ${s.width.toFixed(1)}%; font-size: ${s.fontSize.toFixed(2)}rem;\n}`;
+  }
+
+  function copyCard(t) {
+    navigator.clipboard.writeText(document.getElementById('css-c' + t).textContent)
+      .then(() => { event.target.textContent = '✅ Tersalin!'; setTimeout(() => event.target.textContent = '📋 Salin CSS Card', 1500); });
+  }
+
+  // Video state
+  const vs = {
+    1: {top:11.5, left:51.5, width:22, height:16},
+    2: {top:13.5, left:51.5, width:22, height:16},
+    3: {top:15.5, left:51.5, width:22, height:16},
+    4: {top:18.0, left:51.5, width:22, height:16}
+  };
+
+  function updVid(t, p, v) {
+    v = parseFloat(v); vs[t][p] = v;
+    const el = document.getElementById('vo-' + t);
+    el.style.top = vs[t].top + '%'; el.style.left = vs[t].left + '%';
+    el.style.width = vs[t].width + '%'; el.style.height = vs[t].height + '%';
+    document.getElementById('v' + t + '-' + p).textContent = v.toFixed(1) + '%';
+    const s = vs[t];
+    document.getElementById('css-v' + t).textContent =
+      `videoTopPercent: ${s.top.toFixed(1)}, videoLeftPercent: ${s.left.toFixed(1)}\nwidth: ${s.width.toFixed(1)}%, height: ${s.height.toFixed(1)}%`;
+  }
+
+  function copyVid(t) {
+    navigator.clipboard.writeText(document.getElementById('css-v4' ? 'css-v' + t : '').textContent || document.getElementById('css-v' + t).textContent)
+      .then(() => { event.target.textContent = '✅ Tersalin!'; setTimeout(() => event.target.textContent = '📋 Salin Nilai Video Overlay', 1500); });
+  }
+
+  function goSec(t, sec) {
+    const v = document.getElementById('vid-' + t);
+    v.currentTime = sec; v.pause();
+  }
+
+  function pp(t) {
+    const v = document.getElementById('vid-' + t);
+    v.paused ? v.play() : v.pause();
+  }
+
+  function fmtTime(t) {
+    const m = String(Math.floor(t / 60)).padStart(2,'0');
+    const s = String(Math.floor(t % 60)).padStart(2,'0');
+    const ms = String(Math.round((t % 1)*1000)).padStart(3,'0');
+    return `${m}:${s}.${ms}`;
+  }
+
+  [1,2,3,4].forEach(t => {
+    const v = document.getElementById('vid-' + t);
+    v.addEventListener('timeupdate', () => { document.getElementById('td-' + t).textContent = fmtTime(v.currentTime); });
+    v.addEventListener('loadedmetadata', () => goSec(t, 5));
+  });
+</script>
+</body>
+</html>
