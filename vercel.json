@@ -2,7 +2,6 @@
   "cleanUrls": true,
   "rewrites": [
     { "source": "/", "destination": "/love-match/index.html" },
-    { "source": "/spin", "destination": "/love-match/spin/bagstud-spin.html" },
-    { "source": "/(.*)", "destination": "/love-match/$1" }
+    { "source": "/spin", "destination": "/love-match/spin/bagstud-spin.html" }
   ]
 }
