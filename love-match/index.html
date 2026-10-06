@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Love Match Calculator - Bahagia Studio</title>
+  <meta name="description"
+    content="Kalkulator Kecocokan Nama Interaktif dari Bahagia Studio. Hitung persentase chemistry dan keharmonisan nama Anda.">
+
+  <!-- Google Fonts: Cardo (Serif Vintage for Score Overlay), Cinzel, & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cardo:wght@400;700&family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Style Base dari Bahagia Studio & Custom Match CSS -->
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/png" href="../assets/images/logo/logo-utama.png">
+</head>
+
+<body class="match-page">
+
+  <main class="match-container">
+    <div class="match-card" id="main-match-card">
+
+      <!-- 1. LANDING SECTION (INPUT FORM) -->
+      <section id="landing-section">
+        <h1 class="match-title">Love Match Calculator</h1>
+        <p class="match-subtitle">Temukan persentase kecocokan & chemistry nama Anda bersama pasangan.</p>
+
+        <form id="match-form" class="match-form" novalidate>
+          <div id="error-msg" class="error-msg"></div>
+
+          <div class="input-group">
+            <label for="name-a">Nama Anda</label>
+            <input type="text" id="name-a" placeholder="Contoh: Ray" autocomplete="off" required>
+          </div>
+
+          <div class="input-group">
+            <label for="name-b">Nama Pasangan</label>
+            <input type="text" id="name-b" placeholder="Contoh: Rose" autocomplete="off" required>
+          </div>
+
+          <button type="submit" class="btn-gold">
+            <span>Hitung Kecocokan</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </button>
+        </form>
+
+        <div class="spin-nav-container" style="margin-top: 1.25rem;">
+          <a href="spin/bagstud-spin.html" class="btn-spin-nav">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M12 2a10 10 0 0 1 10 10"></path>
+              <path d="M12 12l4.5-4.5"></path>
+            </svg>
+            <span>Mainkan Spin Wheel</span>
+          </a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- 2. FULLSCREEN VIDEO OVERLAY SECTION (LOADING & TIER VIDEO WITH OVERLAY SCORE) -->
+  <section id="video-section" class="fullscreen-video-section" style="display: none;">
+    <div class="video-container">
+      <video id="match-video" playsinline webkit-playsinline preload="auto"></video>
+
+      <!-- Overlay Score di Kotak Emas Video (Detik 5.0) -->
+      <div id="video-score-overlay" class="video-score-overlay" style="display: none;">
+        <div id="video-score-number" class="video-score-number">0%</div>
+        <div id="video-pair-names" class="video-pair-names">A × B</div>
+      </div>
+    </div>
+  </section>
+
+  <main class="match-container" id="result-container" style="display: none;">
+    <div class="match-card">
+      <section id="result-section" style="display: none;">
+        <div class="result-header">
+          <h2 id="pair-names-display" class="pair-names">ILHAM × NABILA</h2>
+          <span id="tier-display" class="tier-badge">IN PERFECT SYNC</span>
+        </div>
+
+        <!-- Dynamic Resume Card Container -->
+        <div id="card-wrapper" class="card-wrapper" data-tier="1">
+          <img id="card-img" class="card-img" src="card/tier 3.png" alt="Love Match Resume Card">
+
+          <!-- Presisi Score Overlay di Kotak Emas Card (Font Cardo) -->
+          <div id="card-score-overlay" class="card-score-overlay">
+            <div id="card-score-number" class="card-score-number">0%</div>
+            <div id="card-pair-names" class="card-pair-names">ILHAM × NABILA</div>
+          </div>
+        </div>
+
+        <!-- Match Archetype Box -->
+        <div class="archetype-box" style="margin-top: 1.5rem;">
+          <h3 id="match-type-title" class="archetype-title">The Magnetic Pair</h3>
+          <p id="match-type-desc" class="archetype-desc">Kombinasi nama Anda memancarkan daya tarik alami dan chemistry
+            yang sangat kuat.</p>
+        </div>
+
+        <!-- Breakdown Dimensions -->
+        <div class="dimensions-container">
+          <div class="dim-item">
+            <div class="dim-header">
+              <span>Chemistry</span>
+              <span id="val-chemistry">0%</span>
+            </div>
+            <div class="dim-bar-bg">
+              <div id="bar-chemistry" class="dim-bar-fill"></div>
+            </div>
+          </div>
+
+          <div class="dim-item">
+            <div class="dim-header">
+              <span>Communication</span>
+              <span id="val-communication">0%</span>
+            </div>
+            <div class="dim-bar-bg">
+              <div id="bar-communication" class="dim-bar-fill"></div>
+            </div>
+          </div>
+
+          <div class="dim-item">
+            <div class="dim-header">
+              <span>Energy</span>
+              <span id="val-energy">0%</span>
+            </div>
+            <div class="dim-bar-bg">
+              <div id="bar-energy" class="dim-bar-fill"></div>
+            </div>
+          </div>
+
+          <div class="dim-item">
+            <div class="dim-header">
+              <span>Harmony</span>
+              <span id="val-harmony">0%</span>
+            </div>
+            <div class="dim-bar-bg">
+              <div id="bar-harmony" class="dim-bar-fill"></div>
+            </div>
+          </div>
+
+          <div class="dim-item">
+            <div class="dim-header">
+              <span>Attraction</span>
+              <span id="val-attraction">0%</span>
+            </div>
+            <div class="dim-bar-bg">
+              <div id="bar-attraction" class="dim-bar-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-group">
+          <button id="btn-share" class="btn-gold" style="flex: 1;">
+            <span>Bagikan Hasil</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="18" cy="5" r="3" />
+              <circle cx="6" cy="12" r="3" />
+              <circle cx="18" cy="19" r="3" />
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+            </svg>
+          </button>
+          <button id="btn-retry" class="btn-outline">Coba Lagi</button>
+        </div>
+
+        <p class="disclaimer-text">Fitur ini ditujukan untuk hiburan (entertainment) berdasarkan algoritma nama
+          deterministik.</p>
+      </section>
+
+    </div>
+  </main>
+
+  <div id="share-toast" class="toast">Tautan telah disalin!</div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wheel of Fortune - Elegant Edition</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        slateBlue: {
+                            900: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155',
+                            600: '#475569',
+                            500: '#64748b'
+                        },
+                        gold: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                            accent: '#facc15',
+                            light: '#fef3c7'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #fef3c7 0%, #f59e0b 50%, #d97706 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gold-gradient-bg {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        .gold-gradient-border {
+            border-image: linear-gradient(to right, #f59e0b, #d97706) 1;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+        .glass-card:hover {
+            border-color: rgba(245, 158, 11, 0.4);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="bg-slateBlue-900 text-slate-100 flex flex-col min-h-screen">
+
+    <header class="border-b border-gold-500/20 bg-slateBlue-900/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl gold-gradient-bg flex items-center justify-center shadow-lg shadow-amber-500/20">
+                    <i class="fa-solid fa-dharmachakra text-slate-900 text-xl animate-spin-slow"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wide gold-gradient-text">Bahagia Studio</h1>
+                    <p class="text-xs text-slate-400">Weighted Random Probability Wheel</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <a href="../index.html" class="px-3 py-2 text-xs font-medium bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 rounded-lg border border-amber-500/30 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-heart"></i>
+                    <span class="hidden sm:inline">Love Match</span>
+                </a>
+                <button onclick="app.resetToDefaults()" class="px-3 py-2 text-xs font-medium bg-slateBlue-800 hover:bg-slateBlue-700 text-slate-300 rounded-lg border border-slate-700 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span class="hidden sm:inline">Reset Default</span>
+                </button>
+                <button onclick="app.clearHistory()" class="px-3 py-2 text-xs font-medium bg-slateBlue-800 hover:bg-slateBlue-700 text-slate-300 rounded-lg border border-slate-700 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-trash-can"></i>
+                    <span class="hidden sm:inline">Clear Log</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Left Column: Wheel & Controls -->
+        <div class="lg:col-span-7 flex flex-col items-center justify-start space-y-6">
+            
+            <!-- Wheel Container -->
+            <div class="relative w-full max-w-[420px] aspect-square flex items-center justify-center p-4">
+                <!-- Outer Glowing Ring -->
+                <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-amber-500/20 via-yellow-400/30 to-amber-600/20 blur-xl animate-pulse"></div>
+                
+                <!-- Wheel Pointer Top -->
+                <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 z-30 drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)]">
+                    <div class="w-8 h-10 gold-gradient-bg clip-path-triangle flex items-center justify-center text-slate-900 font-bold pt-2 shadow-md">
+                        <div class="w-3 h-3 bg-slate-900 rounded-full"></div>
+                    </div>
+                </div>
+
+                <!-- Canvas Wheel -->
+                <div class="relative w-full h-full rounded-full p-2 glass-card shadow-2xl flex items-center justify-center">
+                    <canvas id="wheelCanvas" class="w-full h-full rounded-full cursor-pointer"></canvas>
+                    
+                    <!-- Center Spin Button -->
+                    <button id="spinBtn" onclick="app.spinWheel()" class="absolute w-20 h-20 rounded-full gold-gradient-bg text-slate-900 font-extrabold text-lg shadow-[0_0_25px_rgba(245,158,11,0.6)] hover:scale-105 active:scale-95 transition flex flex-col items-center justify-center border-4 border-slateBlue-900 z-20">
+                        <i class="fa-solid fa-play text-xl mb-0.5 ml-1"></i>
+                        <span class="text-[10px] uppercase tracking-wider font-bold">SPIN</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Spin Trigger Button Large -->
+            <div class="w-full max-w-[420px]">
+                <button onclick="app.spinWheel()" id="mainSpinBtn" class="w-full py-4 rounded-xl gold-gradient-bg text-slate-900 font-bold text-lg shadow-lg shadow-amber-500/20 hover:opacity-95 active:scale-[0.98] transition flex items-center justify-center space-x-3">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>PUTAR RODA SEKARANG</span>
+                </button>
+            </div>
+
+            <!-- Quick Stats & Info -->
+            <div class="w-full max-w-[420px] grid grid-cols-2 gap-4">
+                <div class="glass-card p-4 rounded-xl flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                        <i class="fa-solid fa-list-check"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-400">Total Item</div>
+                        <div id="totalItemsCount" class="text-lg font-bold text-slate-100">0</div>
+                    </div>
+                </div>
+                <div class="glass-card p-4 rounded-xl flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-400">Total Bobot</div>
+                        <div id="totalWeightCount" class="text-lg font-bold text-slate-100">100%</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Column: Item Customization & History Log -->
+        <div class="lg:col-span-5 flex flex-col space-y-6">
+            
+            <!-- Item Configuration Card -->
+            <div class="glass-card rounded-2xl p-5 shadow-xl flex flex-col space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-700/50 pb-3">
+                    <h2 class="text-base font-bold flex items-center space-x-2 text-amber-400">
+                        <i class="fa-solid fa-sliders"></i>
+                        <span>Konfigurasi Item & Peluang</span>
+                    </h2>
+                    <span class="text-xs bg-amber-500/10 text-amber-400 px-2.5 py-1 rounded-full border border-amber-500/20">Auto-Normalize</span>
+                </div>
+
+                <!-- Add New Item Form -->
+                <form id="addItemForm" onsubmit="app.addItem(event)" class="space-y-3">
+                    <div class="grid grid-cols-12 gap-2">
+                        <div class="col-span-7">
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Nama Hadiah / Item</label>
+                            <input type="text" id="itemNameInput" placeholder="Contoh: Voucher 50%" required
+                                class="w-full bg-slateBlue-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500 transition">
+                        </div>
+                        <div class="col-span-3">
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Bobot</label>
+                            <input type="number" id="itemWeightInput" placeholder="10" min="1" value="10" required
+                                class="w-full bg-slateBlue-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500 transition">
+                        </div>
+                        <div class="col-span-2 flex items-end">
+                            <button type="submit" class="w-full h-[38px] bg-slateBlue-700 hover:bg-slateBlue-600 text-amber-400 rounded-lg border border-amber-500/30 flex items-center justify-center transition shadow">
+                                <i class="fa-solid fa-plus font-bold"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Items List Container -->
+                <div class="space-y-2 max-h-[260px] overflow-y-auto pr-1" id="itemsListContainer">
+                    <!-- Dynamically populated -->
+                </div>
+            </div>
+
+            <!-- History Log Card -->
+            <div class="glass-card rounded-2xl p-5 shadow-xl flex flex-col space-y-4 flex-grow">
+                <div class="flex items-center justify-between border-b border-slate-700/50 pb-3">
+                    <h2 class="text-base font-bold flex items-center space-x-2 text-amber-400">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        <span>Riwayat Pemenang</span>
+                    </h2>
+                    <span id="historyCount" class="text-xs text-slate-400">0 putaran</span>
+                </div>
+                
+                <div id="historyContainer" class="space-y-2 overflow-y-auto max-h-[200px] pr-1">
+                    <div class="text-center py-6 text-slate-500 text-sm">
+                        Belum ada riwayat putaran. Ayo putar rodanya!
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <div id="winnerModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div class="glass-card border border-amber-500/50 rounded-2xl p-6 sm:p-8 max-w-sm w-full mx-4 text-center transform scale-95 transition-transform duration-300 shadow-2xl relative overflow-hidden">
+            <!-- Decorative Glow background -->
+            <div class="absolute -top-12 -right-12 w-32 h-32 bg-amber-500/20 rounded-full blur-2xl"></div>
+            <div class="absolute -bottom-12 -left-12 w-32 h-32 bg-yellow-500/20 rounded-full blur-2xl"></div>
+
+            <div class="w-16 h-16 rounded-2xl gold-gradient-bg flex items-center justify-center text-slate-900 text-2xl mx-auto mb-4 shadow-lg shadow-amber-500/30 animate-bounce">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+            
+            <h3 class="text-xs font-semibold uppercase tracking-widest text-amber-400 mb-1">Pemenang Terpilih!</h3>
+            <div id="winnerModalName" class="text-2xl sm:text-3xl font-extrabold gold-gradient-text my-3 break-words">-</div>
+            <p id="winnerModalChance" class="text-xs text-slate-400 mb-6">Peluang: 0%</p>
+
+            <button onclick="app.closeWinnerModal()" class="w-full py-3 rounded-xl gold-gradient-bg text-slate-900 font-bold text-sm shadow-lg hover:opacity-95 transition">
+                SELESAI / LANJUTKAN
+            </button>
+        </div>
+    </div>
+
+    <script>
+        class SpinWheelApp {
+            constructor() {
+                this.items = [
+                    { id: '1', name: 'Hadiah Utama (iPhone)', weight: 5, color: '#f59e0b' },
+                    { id: '2', name: 'Voucher Belanja 50%', weight: 15, color: '#3b82f6' },
+                    { id: '3', name: 'Cashback Rp 100rb', weight: 20, color: '#10b981' },
+                    { id: '4', name: 'Merchandise Eksklusif', weight: 25, color: '#8b5cf6' },
+                    { id: '5', name: 'Terima Kasih, Coba Lagi', weight: 35, color: '#64748b' }
+                ];
+                this.history = [];
+                this.isSpinning = false;
+                this.currentAngle = 0; // in radians
+
+                this.canvas = document.getElementById('wheelCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                
+                this.loadFromStorage();
+                this.initCanvasSize();
+                this.bindEvents();
+                this.render();
+            }
+
+            initCanvasSize() {
+                // High DPI display support for crisp wheel rendering
+                const dpr = window.devicePixelRatio || 1;
+                const rect = this.canvas.getBoundingClientRect();
+                this.canvas.width = rect.width * dpr;
+                this.canvas.height = rect.height * dpr;
+                this.ctx.scale(dpr, dpr);
+                this.canvasWidth = rect.width;
+                this.canvasHeight = rect.height;
+            }
+
+            bindEvents() {
+                window.addEventListener('resize', () => {
+                    this.initCanvasSize();
+                    this.render();
+                });
+            }
+
+            loadFromStorage() {
+                try {
+                    const savedItems = localStorage.getItem('bahagiastudio_items');
+                    const savedHistory = localStorage.getItem('bahagiastudio_history');
+                    if (savedItems) this.items = JSON.parse(savedItems);
+                    if (savedHistory) this.history = JSON.parse(savedHistory);
+                } catch (e) {
+                    console.error('Failed to load storage', e);
+                }
+            }
+
+            saveToStorage() {
+                try {
+                    localStorage.setItem('bahagiastudio_items', JSON.stringify(this.items));
+                    localStorage.setItem('bahagiastudio_history', JSON.stringify(this.history));
+                } catch (e) {
+                    console.error('Failed to save storage', e);
+                }
+            }
+
+            getTotalWeight() {
+                return this.items.reduce((sum, item) => sum + Number(item.weight), 0);
+            }
+
+            addItem(e) {
+                e.preventDefault();
+                const nameInput = document.getElementById('itemNameInput');
+                const weightInput = document.getElementById('itemWeightInput');
+                
+                const name = nameInput.value.trim();
+                const weight = parseFloat(weightInput.value);
+
+                if (!name || isNaN(weight) || weight <= 0) return;
+
+                // Palette colors cycle
+                const colors = ['#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316'];
+                const color = colors[this.items.length % colors.length];
+
+                this.items.push({
+                    id: Date.now().toString(),
+                    name,
+                    weight,
+                    color
+                });
+
+                nameInput.value = '';
+                weightInput.value = '10';
+                nameInput.focus();
+
+                this.saveToStorage();
+                this.render();
+            }
+
+            deleteItem(id) {
+                if (this.items.length <= 2) {
+                    alert('Minimal harus ada 2 item dalam roda!');
+                    return;
+                }
+                this.items = this.items.filter(item => item.id !== id);
+                this.saveToStorage();
+                this.render();
+            }
+
+            updateWeight(id, newWeight) {
+                const val = parseFloat(newWeight);
+                if (isNaN(val) || val < 0) return;
+                const item = this.items.find(i => i.id === id);
+                if (item) {
+                    item.weight = val === 0 ? 0.1 : val;
+                    this.saveToStorage();
+                    this.renderStats();
+                }
+            }
+
+            resetToDefaults() {
+                this.items = [
+                    { id: '1', name: 'Hadiah Utama (iPhone)', weight: 5, color: '#f59e0b' },
+                    { id: '2', name: 'Voucher Belanja 50%', weight: 15, color: '#3b82f6' },
+                    { id: '3', name: 'Cashback Rp 100rb', weight: 20, color: '#10b981' },
+                    { id: '4', name: 'Merchandise Eksklusif', weight: 25, color: '#8b5cf6' },
+                    { id: '5', name: 'Terima Kasih, Coba Lagi', weight: 35, color: '#64748b' }
+                ];
+                this.saveToStorage();
+                this.render();
+            }
+
+            clearHistory() {
+                this.history = [];
+                this.saveToStorage();
+                this.renderHistory();
+            }
+
+            render() {
+                this.renderWheel();
+                this.renderItemsList();
+                this.renderStats();
+                this.renderHistory();
+            }
+
+            renderStats() {
+                document.getElementById('totalItemsCount').textContent = this.items.length;
+                const totalW = this.getTotalWeight();
+                document.getElementById('totalWeightCount').textContent = totalW.toFixed(0);
+            }
+
+            renderWheel() {
+                if (!this.ctx) return;
+                const width = this.canvasWidth || 300;
+                const height = this.canvasHeight || 300;
+                const centerX = width / 2;
+                const centerY = height / 2;
+                const radius = Math.min(centerX, centerY) - 10;
+
+                this.ctx.clearRect(0, 0, width, height);
+
+                const totalWeight = this.getTotalWeight();
+                if (totalWeight <= 0 || this.items.length === 0) return;
+
+                let startAngle = this.currentAngle;
+
+                this.items.forEach((item, index) => {
+                    const sliceAngle = (item.weight / totalWeight) * 2 * Math.PI;
+                    const endAngle = startAngle + sliceAngle;
+
+                    // Draw Slice
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(centerX, centerY);
+                    this.ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+                    this.ctx.closePath();
+
+                    this.ctx.fillStyle = item.color;
+                    this.ctx.fill();
+
+                    // Gold Border separator
+                    this.ctx.lineWidth = 2;
+                    this.ctx.strokeStyle = '#0f172a';
+                    this.ctx.stroke();
+
+                    // Draw Text
+                    this.ctx.save();
+                    this.ctx.translate(centerX, centerY);
+                    this.ctx.rotate(startAngle + sliceAngle / 2);
+                    this.ctx.textAlign = 'right';
+                    this.ctx.fillStyle = '#ffffff';
+                    this.ctx.font = 'bold 11px "Plus Jakarta Sans", sans-serif';
+                    
+                    // Truncate long text
+                    let displayName = item.name;
+                    if (displayName.length > 16) {
+                        displayName = displayName.substring(0, 14) + '...';
+                    }
+                    this.ctx.fillText(displayName, radius - 25, 4);
+                    this.ctx.restore();
+
+                    startAngle = endAngle;
+                });
+
+                // Outer Gold Ring Rim
+                this.ctx.beginPath();
+                this.ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                this.ctx.lineWidth = 6;
+                this.ctx.strokeStyle = '#f59e0b';
+                this.ctx.stroke();
+            }
+
+            renderItemsList() {
+                const container = document.getElementById('itemsListContainer');
+                container.innerHTML = '';
+                const totalWeight = this.getTotalWeight();
+
+                this.items.forEach((item) => {
+                    const percentage = totalWeight > 0 ? ((item.weight / totalWeight) * 100).toFixed(1) : 0;
+                    
+                    const div = document.createElement('div');
+                    div.className = 'flex items-center justify-between bg-slateBlue-900/60 p-2.5 rounded-xl border border-slate-700/50 hover:border-slate-600 transition';
+                    div.innerHTML = `
+                        <div class="flex items-center space-x-3 flex-grow mr-2">
+                            <div class="w-3 h-3 rounded-full flex-shrink-0" style="background-color: ${item.color};"></div>
+                            <div class="truncate">
+                                <div class="text-xs font-semibold text-slate-200 truncate">${this.escapeHtml(item.name)}</div>
+                                <div class="text-[10px] text-amber-400 font-medium">${percentage}% peluang</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <input type="number" min="0.1" value="${item.weight}" 
+                                onchange="app.updateWeight('${item.id}', this.value)"
+                                class="w-16 bg-slateBlue-800 border border-slate-700 rounded-lg px-2 py-1 text-xs text-center text-slate-100 focus:outline-none focus:border-amber-500">
+                            <button onclick="app.deleteItem('${item.id}')" class="text-slate-500 hover:text-red-400 p-1.5 transition">
+                                <i class="fa-solid fa-trash text-xs"></i>
+                            </button>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+
+            renderHistory() {
+                const container = document.getElementById('historyContainer');
+                document.getElementById('historyCount').textContent = `${this.history.length} putaran`;
+
+                if (this.history.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-6 text-slate-500 text-sm">
+                            Belum ada riwayat putaran. Ayo putar rodanya!
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = '';
+                this.history.forEach((h, idx) => {
+                    const div = document.createElement('div');
+                    div.className = 'flex items-center justify-between bg-slateBlue-900/40 p-2.5 rounded-xl border border-slate-700/30 text-xs';
+                    div.innerHTML = `
+                        <div class="flex items-center space-x-2 truncate mr-2">
+                            <span class="w-5 h-5 rounded-full bg-amber-500/10 text-amber-400 font-bold flex items-center justify-center text-[10px] flex-shrink-0">${this.history.length - idx}</span>
+                            <span class="font-semibold text-slate-200 truncate">${this.escapeHtml(h.winner)}</span>
+                        </div>
+                        <span class="text-[10px] text-slate-500 flex-shrink-0">${h.time}</span>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+
+            spinWheel() {
+                if (this.isSpinning || this.items.length === 0) return;
+                this.isSpinning = this.setSpinningState(true);
+
+                const totalWeight = this.getTotalWeight();
+                // Random weight point
+                let randomWeight = Math.random() * totalWeight;
+                let accumulatedWeight = 0;
+                let winningIndex = 0;
+
+                for (let i = 0; i < this.items.length; i++) {
+                    accumulatedWeight += Number(this.items[i].weight);
+                    if (randomWeight <= accumulatedWeight) {
+                        winningIndex = i;
+                        break;
+                    }
+                }
+
+                // Calculate angle to land exactly on the winning index segment center
+                let startAngle = 0;
+                for (let i = 0; i < winningIndex; i++) {
+                    startAngle += (this.items[i].weight / totalWeight) * 2 * Math.PI;
+                }
+                const winningSliceAngle = (this.items[winningIndex].weight / totalWeight) * 2 * Math.PI;
+                const targetSliceCenter = startAngle + winningSliceAngle / 2;
+
+                // Pointer is at top (-Math.PI / 2 or 3*Math.PI / 2)
+                // We want targetSliceCenter + finalAngle === 3*Math.PI/2 (mod 2*PI)
+                const pointerAngle = 3 * Math.PI / 2;
+                const extraSpins = 5 + Math.floor(Math.random() * 4); // 5 to 8 full rotations
+                const targetAngle = pointerAngle - targetSliceCenter + (extraSpins * 2 * Math.PI);
+
+                const startAngleCurrent = this.currentAngle % (2 * Math.PI);
+                const totalRotationNeeded = targetAngle - startAngleCurrent;
+
+                const duration = 4000; // 4 seconds animation
+                const startTime = performance.now();
+
+                const animateSpin = (currentTime) => {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    
+                    // Ease out quartic deceleration
+                    const easeOut = 1 - Math.pow(1 - progress, 4);
+
+                    this.currentAngle = startAngleCurrent + (totalRotationNeeded * easeOut);
+                    this.renderWheel();
+
+                    if (progress < 1) {
+                        requestAnimationFrame(animateSpin);
+                    } else {
+                        this.currentAngle = targetAngle % (2 * Math.PI);
+                        this.isSpinning = this.setSpinningState(false);
+                        this.onWin(this.items[winningIndex], totalWeight);
+                    }
+                };
+
+                requestAnimationFrame(animateSpin);
+            }
+
+            setSpinningState(spinning) {
+                const spinBtn = document.getElementById('spinBtn');
+                const mainSpinBtn = document.getElementById('mainSpinBtn');
+                if (spinning) {
+                    spinBtn.disabled = true;
+                    mainSpinBtn.disabled = true;
+                    spinBtn.classList.add('opacity-70');
+                    mainSpinBtn.classList.add('opacity-70');
+                } else {
+                    spinBtn.disabled = false;
+                    mainSpinBtn.disabled = false;
+                    spinBtn.classList.remove('opacity-70');
+                    mainSpinBtn.classList.remove('opacity-70');
+                }
+                return spinning;
+            }
+
+            onWin(winnerItem, totalWeight) {
+                const percentage = ((winnerItem.weight / totalWeight) * 100).toFixed(1);
+                
+                // Add to history
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                this.history.unshift({ winner: winnerItem.name, time: timeStr });
+                if (this.history.length > 20) this.history.pop();
+                this.saveToStorage();
+                this.renderHistory();
+
+                // Show modal & trigger confetti
+                this.showWinnerModal(winnerItem.name, percentage);
+                this.triggerConfetti();
+            }
+
+            showWinnerModal(name, chance) {
+                const modal = document.getElementById('winnerModal');
+                document.getElementById('winnerModalName').textContent = name;
+                document.getElementById('winnerModalChance').textContent = `Peluang Terkonfigurasi: ${chance}%`;
+
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    modal.querySelector('div').classList.remove('scale-95');
+                    modal.querySelector('div').classList.add('scale-100');
+                }, 10);
+            }
+
+            closeWinnerModal() {
+                const modal = document.getElementById('winnerModal');
+                modal.classList.add('opacity-0');
+                modal.querySelector('div').classList.remove('scale-100');
+                modal.querySelector('div').classList.add('scale-95');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            }
+
+            triggerConfetti() {
+                if (typeof confetti === 'function') {
+                    confetti({
+                        particleCount: 120,
+                        spread: 80,
+                        origin: { y: 0.6 },
+                        colors: ['#f59e0b', '#fbbf24', '#3b82f6', '#10b981', '#ffffff']
+                    });
+                }
+            }
+
+            escapeHtml(str) {
+                return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+            }
+        }
+
+        // Initialize App on DOM load
+        let app;
+        window.addEventListener('DOMContentLoaded', () => {
+            app = new SpinWheelApp();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,581 @@
+/* CSS Variables & System Design */
+:root {
+  --bg-dark: #0a0e1a;
+  --bg-navy-card: rgba(15, 23, 42, 0.85);
+  --text-light: #f8fafc;
+  --text-muted-light: #94a3b8;
+  --accent-gold: #c5a059;
+  --accent-gold-hover: #dfb76c;
+  --accent-gold-light: #e8d5b5;
+  --accent-gold-glow: rgba(197, 160, 89, 0.3);
+  --border-gold: rgba(197, 160, 89, 0.3);
+  --glass-border: rgba(197, 160, 89, 0.2);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  --shadow-gold: 0 10px 30px -5px rgba(197, 160, 89, 0.15);
+  --transition-fast: all 0.2s ease;
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-serif: 'Cinzel', serif;
+}
+
+/* Layout & Container */
+.match-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-dark);
+  color: var(--text-light);
+  font-family: var(--font-sans);
+}
+
+.match-container {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem 1rem;
+  width: 100%;
+}
+
+/* Glass Card */
+.match-card {
+  background: var(--bg-navy-card);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem 2rem;
+  box-shadow: var(--shadow-lg), var(--shadow-gold);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Header & Titles */
+.match-title {
+  font-family: var(--font-serif);
+  font-size: 2.25rem;
+  color: var(--accent-gold);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.05em;
+}
+
+.match-subtitle {
+  color: var(--text-muted-light);
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+}
+
+/* Form Styles */
+.match-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  text-align: left;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.input-group label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--accent-gold-light);
+  letter-spacing: 0.03em;
+}
+
+.input-group input {
+  background: rgba(10, 17, 24, 0.7);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-md);
+  padding: 0.875rem 1.25rem;
+  color: var(--text-light);
+  font-size: 1rem;
+  font-family: var(--font-sans);
+  outline: none;
+  transition: var(--transition-fast);
+}
+
+.input-group input:focus {
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 12px var(--accent-gold-glow);
+}
+
+/* Buttons */
+.btn-gold {
+  background: linear-gradient(135deg, var(--accent-gold) 0%, #a67c33 100%);
+  color: #0a1118;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 1rem 1.75rem;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  box-shadow: var(--shadow-gold);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.btn-gold:hover {
+  background: linear-gradient(135deg, var(--accent-gold-hover) 0%, var(--accent-gold) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px rgba(197, 160, 89, 0.4);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--glass-border);
+  color: var(--text-light);
+  font-weight: 600;
+  padding: 0.875rem 1.5rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  flex: 1;
+}
+
+.btn-outline:hover {
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+}
+
+.btn-spin-nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  background: rgba(197, 160, 89, 0.08);
+  border: 1px solid var(--border-gold);
+  color: var(--accent-gold-light);
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-radius: var(--radius-full);
+  text-decoration: none;
+  transition: var(--transition-fast);
+  box-sizing: border-box;
+}
+
+.btn-spin-nav:hover {
+  background: rgba(197, 160, 89, 0.2);
+  color: #ffffff;
+  border-color: var(--accent-gold);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(197, 160, 89, 0.25);
+}
+
+.error-msg {
+  color: #ff6b6b;
+  font-size: 0.85rem;
+  background: rgba(255, 107, 107, 0.1);
+  padding: 0.75rem;
+  border-radius: var(--radius-sm);
+  display: none;
+}
+
+/* Loading Screen */
+.loading-box {
+  padding: 3rem 1rem;
+}
+
+.loading-spinner {
+  width: 54px;
+  height: 54px;
+  border: 3px solid rgba(197, 160, 89, 0.2);
+  border-top-color: var(--accent-gold);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1.5rem auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-bar-bg {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-full);
+  margin: 1.5rem 0 0.5rem 0;
+  overflow: hidden;
+}
+
+.loading-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent-gold-light), var(--accent-gold));
+  transition: width 0.4s ease;
+}
+
+.loading-counter {
+  font-size: 0.8rem;
+  color: var(--accent-gold-light);
+  letter-spacing: 0.1em;
+}
+
+/* Result Screen */
+.result-header {
+  margin-bottom: 2rem;
+}
+
+.pair-names {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  color: var(--text-light);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+.tier-badge {
+  display: inline-block;
+  background: rgba(197, 160, 89, 0.15);
+  color: var(--accent-gold);
+  border: 1px solid var(--glass-border);
+  padding: 0.25rem 0.85rem;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Score Circle */
+.score-circle-container {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  margin: 0 auto 1.5rem auto;
+}
+
+.score-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.score-svg circle {
+  fill: none;
+  stroke-width: 8;
+}
+
+.score-bg-circle {
+  stroke: rgba(255, 255, 255, 0.08);
+}
+
+.score-val-circle {
+  stroke: var(--accent-gold);
+  stroke-linecap: round;
+  stroke-dasharray: 283;
+  stroke-dashoffset: 283;
+  transition: stroke-dashoffset 0.1s linear;
+}
+
+.score-text-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-serif);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--accent-gold);
+}
+
+/* ==========================================================================
+   FULLSCREEN VIDEO PLAYER & OVERLAY SCORE (DETIK 5.0)
+   ========================================================================== */
+.fullscreen-video-section {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.fullscreen-video-section .video-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  max-width: none;
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fullscreen-video-section video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  /* Mempertahankan rasio aspek video dengan latar hitam elegan */
+  display: block;
+}
+
+/* Video Score Overlay Fullscreen (Tepat di Kotak Emas Cream saat Detik 5.0) */
+.fullscreen-video-section .video-score-overlay {
+  position: absolute;
+  top: 15.5%;
+  left: 51.5%;
+  transform: translateX(-50%);
+  width: 12.5%;
+  height: 15%;
+  max-width: 30vw;
+  text-align: center;
+  font-family: 'Cardo', serif;
+  color: #2b3542;
+  z-index: 100;
+  pointer-events: none;
+  animation: fadeIn 0.4s ease forwards;
+}
+
+.fullscreen-video-section .video-score-number {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 700;
+  line-height: 1;
+  color: #232c38;
+}
+
+.fullscreen-video-section .video-pair-names {
+  font-size: clamp(0.85rem, 2.5vw, 1.1rem);
+  font-weight: 400;
+  margin-top: 0.25rem;
+  letter-spacing: 0.05em;
+  color: #3b4756;
+}
+
+/* ==========================================================================
+   DYNAMIC RESUME CARD (FRAME EMAS PRESISI PER TIER)
+   ========================================================================== */
+.card-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto 1.5rem auto;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg), 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.card-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Base Card Score Overlay */
+.card-score-overlay {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 34%;
+  text-align: center;
+  font-family: 'Cardo', serif;
+  color: #2b3542;
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.card-score-number {
+  font-size: 1.8em;
+  font-weight: 700;
+  line-height: 1;
+  color: #1e2836;
+  text-align: center;
+  width: 100%;
+}
+
+.card-pair-names {
+  font-size: 0.6em;
+  font-weight: 600;
+  margin-top: 0.1em;
+  letter-spacing: 0.04em;
+  color: #384454;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  text-align: center;
+  width: 100%;
+  display: block;
+}
+
+/* PRESISI KOORDINAT TOP OVERLAY KOTAK EMAS PER TIER CARD PNG (590x1063)
+   data-tier 1 = Different Paths  (skor < 63)  → tier 1.png
+   data-tier 2 = Growing Closer   (skor 63-74) → tier 2.png
+   data-tier 3 = A Rare Match     (skor 75-86) → tier 4.png  ← file asli tier4.png berisi artwork A Rare Match
+   data-tier 4 = In Perfect Sync  (skor ≥ 87)  → tier 3.png  ← file asli tier3.png berisi artwork In Perfect Sync
+*/
+
+/* tier 1.png (Different Paths) */
+.card-wrapper[data-tier="1"] .card-score-overlay {
+  top: 16.7%;
+  left: 49.0%;
+  height: 15.1%;
+  width: 26.5%;
+  font-size: 1rem;
+}
+
+/* tier 2.png (Growing Closer) */
+.card-wrapper[data-tier="2"] .card-score-overlay {
+  top: 13.4%;
+  left: 49.5%;
+  height: 12.7%;
+  width: 24.0%;
+  font-size: 1rem;
+}
+
+/* tier 3 = A Rare Match → tier 3.png */
+.card-wrapper[data-tier="3"] .card-score-overlay {
+  top: 7.8%;
+  left: 63.0%;
+  height: 10.9%;
+  width: 20.5%;
+  font-size: 1rem;
+}
+
+/* tier 4 = In Perfect Sync → tier 4.png */
+.card-wrapper[data-tier="4"] .card-score-overlay {
+  top: 9.8%;
+  left: 50.0%;
+  height: 12.1%;
+  width: 21.0%;
+  font-size: 1rem;
+}
+
+/* Fade-in Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+/* Match Archetype Box */
+.archetype-box {
+  background: rgba(15, 28, 43, 0.5);
+  border-left: 3px solid var(--accent-gold);
+  padding: 1.25rem;
+  border-radius: var(--radius-sm);
+  text-align: left;
+  margin-bottom: 2rem;
+}
+
+.archetype-title {
+  font-family: var(--font-serif);
+  color: var(--accent-gold-light);
+  font-size: 1.15rem;
+  margin-bottom: 0.35rem;
+}
+
+.archetype-desc {
+  font-size: 0.9rem;
+  color: var(--text-muted-light);
+  line-height: 1.5;
+}
+
+/* Dimensions Breakdown */
+.dimensions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+  text-align: left;
+}
+
+.dim-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.dim-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+
+.dim-bar-bg {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.dim-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent-gold-light), var(--accent-gold));
+  border-radius: var(--radius-full);
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Action Group */
+.action-group {
+  display: flex;
+  gap: 1rem;
+}
+
+.disclaimer-text {
+  font-size: 0.75rem;
+  color: var(--text-muted-light);
+  margin-top: 2rem;
+  opacity: 0.7;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--accent-gold);
+  color: #0a1118;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-full);
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 9999;
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
