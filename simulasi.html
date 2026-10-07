@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bahagia Studio - Responsive Simulation Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #080c14;
+      --bg-card: rgba(15, 23, 42, 0.9);
+      --bg-toolbar: #0f172a;
+      --accent-gold: #c5a059;
+      --accent-gold-hover: #dfb76c;
+      --accent-gold-glow: rgba(197, 160, 89, 0.3);
+      --text-light: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-gold: rgba(197, 160, 89, 0.25);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --font-sans: 'Plus Jakarta Sans', sans-serif;
+      --font-serif: 'Cinzel', serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Top Control Bar */
+    header.sim-header {
+      background: var(--bg-toolbar);
+      border-bottom: 1px solid var(--border-gold);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .brand-area {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-title {
+      font-family: var(--font-serif);
+      font-size: 1.15rem;
+      color: var(--accent-gold);
+      letter-spacing: 0.05em;
+    }
+
+    .brand-badge {
+      background: rgba(197, 160, 89, 0.15);
+      color: var(--accent-gold);
+      border: 1px solid var(--border-gold);
+      font-size: 0.7rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    /* Controls Bar */
+    .controls-wrapper {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .device-btns {
+      display: flex;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius-md);
+      padding: 0.25rem;
+      border: 1px solid var(--glass-border);
+      gap: 0.25rem;
+    }
+
+    .btn-device {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.4rem 0.75rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .btn-device:hover {
+      color: var(--text-light);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .btn-device.active {
+      background: var(--accent-gold);
+      color: #0a1118;
+      box-shadow: 0 0 10px var(--accent-gold-glow);
+    }
+
+    .action-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--glass-border);
+      color: var(--text-light);
+      padding: 0.45rem 0.85rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+      font-family: inherit;
+      text-decoration: none;
+    }
+
+    .action-btn:hover {
+      border-color: var(--accent-gold);
+      color: var(--accent-gold);
+    }
+
+    .action-btn.btn-primary {
+      background: linear-gradient(135deg, var(--accent-gold) 0%, #a67c33 100%);
+      color: #0a1118;
+      border: none;
+    }
+
+    .action-btn.btn-primary:hover {
+      background: linear-gradient(135deg, var(--accent-gold-hover) 0%, var(--accent-gold) 100%);
+      color: #000;
+    }
+
+    /* Sub Toolbar: Presets & Quick Resizer */
+    .sub-toolbar {
+      background: rgba(10, 16, 26, 0.95);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 0.6rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: 0.85rem;
+    }
+
+    .preset-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .preset-label {
+      color: var(--accent-gold);
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+
+    .preset-chip {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-gold);
+      color: var(--text-light);
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .preset-chip:hover {
+      background: rgba(197, 160, 89, 0.2);
+      border-color: var(--accent-gold);
+    }
+
+    .dimension-info {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    .dimension-val {
+      color: var(--accent-gold);
+      font-weight: 700;
+    }
+
+    /* Main Simulator Stage */
+    .sim-stage {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      background: radial-gradient(circle at center, #111a2e 0%, #060910 100%);
+      overflow: auto;
+      min-height: calc(100vh - 120px);
+    }
+
+    /* Device Mockup Frame */
+    .device-frame {
+      background: #000;
+      border-radius: 42px;
+      padding: 12px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 0 2px rgba(197, 160, 89, 0.3);
+      position: relative;
+      transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Dynamic Island / Notch */
+    .device-notch {
+      width: 110px;
+      height: 24px;
+      background: #000;
+      border-radius: 20px;
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      pointer-events: none;
+    }
+
+    .notch-camera {
+      width: 8px;
+      height: 8px;
+      background: #111d2e;
+      border-radius: 50%;
+      border: 1px solid #1e293b;
+    }
+
+    .device-screen-container {
+      width: 100%;
+      height: 100%;
+      border-radius: 32px;
+      overflow: hidden;
+      background: #0a0e1a;
+      position: relative;
+    }
+
+    .device-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    /* Desktop Mode (No phone border) */
+    .device-frame.desktop-mode {
+      border-radius: var(--radius-md);
+      padding: 0;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 0 1px var(--border-gold);
+    }
+
+    .device-frame.desktop-mode .device-notch {
+      display: none;
+    }
+
+    .device-frame.desktop-mode .device-screen-container {
+      border-radius: var(--radius-md);
+    }
+
+    /* Responsive Drawer / Inspector */
+    .quick-status-bar {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-gold);
+      padding: 0.6rem 1.2rem;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      font-size: 0.8rem;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Top Header Navigation & Controls -->
+  <header class="sim-header">
+    <div class="brand-area">
+      <h1 class="brand-title">BAHAGIA STUDIO</h1>
+      <span class="brand-badge">Responsive Simulator</span>
+    </div>
+
+    <div class="controls-wrapper">
+      <!-- Device Preset Switchers -->
+      <div class="device-btns">
+        <button class="btn-device active" data-name="iphone-15" data-width="393" data-height="852" data-notch="true">
+          <span>📱</span> iPhone 15 Pro (393px)
+        </button>
+        <button class="btn-device" data-name="samsung-s24" data-width="412" data-height="915" data-notch="true">
+          <span>📱</span> Galaxy S24 (412px)
+        </button>
+        <button class="btn-device" data-name="iphone-se" data-width="375" data-height="667" data-notch="false">
+          <span>📱</span> Mobile Kecil (375px)
+        </button>
+        <button class="btn-device" data-name="ipad" data-width="768" data-height="1024" data-notch="false">
+          <span>📑</span> Tablet (768px)
+        </button>
+        <button class="btn-device" data-name="desktop" data-width="1100" data-height="780" data-desktop="true">
+          <span>💻</span> Desktop (1100px)
+        </button>
+      </div>
+
+      <!-- Action Utilities -->
+      <button id="btn-rotate" class="action-btn" title="Rotasi Portrait / Landscape">
+        🔄 Putar Layar
+      </button>
+
+      <button id="btn-reload" class="action-btn" title="Muat Ulang Halaman Game">
+        ⚡ Reload
+      </button>
+
+      <a href="love-match/index.html" target="_blank" class="action-btn btn-primary" title="Buka di Tab Baru Penuh">
+        ↗ Buka Tab Penuh
+      </a>
+    </div>
+  </header>
+
+  <!-- Sub Toolbar for Quick Presets -->
+  <div class="sub-toolbar">
+    <div class="preset-group">
+      <span class="preset-label">⚡ Simulasi Cepat:</span>
+      <button class="preset-chip" onclick="injectTest('Budi', 'Siti')">Tier 1: Budi × Siti</button>
+      <button class="preset-chip" onclick="injectTest('Andi', 'Maya')">Tier 2: Andi × Maya</button>
+      <button class="preset-chip" onclick="injectTest('Ray', 'Rose')">Tier 3: Ray × Rose</button>
+      <button class="preset-chip" onclick="injectTest('Ilham', 'Nabila')">Tier 4: Ilham × Nabila</button>
+    </div>
+
+    <div class="dimension-info">
+      <span>Resolusi: <span id="res-display" class="dimension-val">393 × 852 px</span></span>
+      <span>Tipe: <span id="device-type-display" class="dimension-val">Mobile Portrait</span></span>
+    </div>
+  </div>
+
+  <!-- Stage Arena with Mockup Frame -->
+  <main class="sim-stage">
+    <div id="device-frame" class="device-frame" style="width: 417px; height: 876px;">
+      <div id="device-notch" class="device-notch">
+        <div class="notch-camera"></div>
+      </div>
+      <div class="device-screen-container">
+        <iframe id="game-iframe" class="device-iframe" src="love-match/index.html"></iframe>
+      </div>
+    </div>
+  </main>
+
+  <!-- Quick Info Floating Status -->
+  <div class="quick-status-bar">
+    <div class="status-dot"></div>
+    <span>Localhost Server Aktif</span>
+    <span style="color: var(--accent-gold); font-weight: 600;">Port 8080</span>
+  </div>
+
+  <script>
+    const frame = document.getElementById('device-frame');
+    const notch = document.getElementById('device-notch');
+    const iframe = document.getElementById('game-iframe');
+    const resDisplay = document.getElementById('res-display');
+    const typeDisplay = document.getElementById('device-type-display');
+    const deviceButtons = document.querySelectorAll('.btn-device');
+    const btnRotate = document.getElementById('btn-rotate');
+    const btnReload = document.getElementById('btn-reload');
+
+    let currentWidth = 393;
+    let currentHeight = 852;
+    let isLandscape = false;
+    let currentDevice = 'iphone-15';
+    let isDesktop = false;
+
+    function updateDimensions(w, h, showNotch = true, desktop = false) {
+      currentWidth = w;
+      currentHeight = h;
+      isDesktop = desktop;
+
+      if (desktop) {
+        frame.classList.add('desktop-mode');
+        frame.style.width = `${w}px`;
+        frame.style.height = `${h}px`;
+      } else {
+        frame.classList.remove('desktop-mode');
+        // Frame adds padding (12px on each side = 24px total)
+        frame.style.width = `${w + 24}px`;
+        frame.style.height = `${h + 24}px`;
+      }
+
+      if (showNotch && !isLandscape && !desktop) {
+        notch.style.display = 'flex';
+      } else {
+        notch.style.display = 'none';
+      }
+
+      resDisplay.textContent = `${w} × ${h} px`;
+      
+      let category = 'Mobile';
+      if (w >= 1024) category = 'Desktop';
+      else if (w >= 600) category = 'Tablet';
+
+      typeDisplay.textContent = `${category} ${isLandscape ? 'Landscape' : 'Portrait'}`;
+    }
+
+    deviceButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        deviceButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        isLandscape = false;
+        const w = parseInt(btn.dataset.width);
+        const h = parseInt(btn.dataset.height);
+        const hasNotch = btn.dataset.notch === 'true';
+        const desktop = btn.dataset.desktop === 'true';
+        currentDevice = btn.dataset.name;
+
+        updateDimensions(w, h, hasNotch, desktop);
+      });
+    });
+
+    btnRotate.addEventListener('click', () => {
+      if (isDesktop) return;
+      isLandscape = !isLandscape;
+      const temp = currentWidth;
+      currentWidth = currentHeight;
+      currentHeight = temp;
+      updateDimensions(currentWidth, currentHeight, !isLandscape, isDesktop);
+    });
+
+    btnReload.addEventListener('click', () => {
+      iframe.src = iframe.src;
+    });
+
+    // Simulasi Cepat: Langsung isi form dan submit di dalam iframe
+    window.injectTest = function (nameA, nameB) {
+      try {
+        const iDoc = iframe.contentDocument || iframe.contentWindow.document;
+        const inputA = iDoc.getElementById('name-a');
+        const inputB = iDoc.getElementById('name-b');
+        const form = iDoc.getElementById('match-form');
+        const btnRetry = iDoc.getElementById('btn-retry');
+
+        if (btnRetry && btnRetry.offsetParent !== null) {
+          btnRetry.click();
+          setTimeout(() => {
+            if (inputA && inputB && form) {
+              inputA.value = nameA;
+              inputB.value = nameB;
+              form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+            }
+          }, 300);
+        } else if (inputA && inputB && form) {
+          inputA.value = nameA;
+          inputB.value = nameB;
+          form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+        } else {
+          // Bila cross-origin/reloading, gunakan query params
+          iframe.src = `love-match/index.html?a=${encodeURIComponent(nameA)}&b=${encodeURIComponent(nameB)}`;
+        }
+      } catch (e) {
+        iframe.src = `love-match/index.html?a=${encodeURIComponent(nameA)}&b=${encodeURIComponent(nameB)}`;
+      }
+    };
+
+    // Initial setup
+    updateDimensions(393, 852, true, false);
+  </script>
+</body>
+
+</html>

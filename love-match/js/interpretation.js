@@ -5,11 +5,7 @@ export function getScoreTier(score) {
             tier: "In Perfect Sync",
             badge: "Extraordinary Connection",
             video: "video/tier/Video 4.mp4",
-            cardImg: "card/tier 4.png",
-            videoTopPercent: 8.5,
-            videoLeftPercent: 50.5,
-            videoWidthPercent: 10.5,
-            videoHeightPercent: 16.5
+            cardImg: "card/tier 4.png"
         };
     } else if (score >= 75) {
         return {
@@ -17,11 +13,7 @@ export function getScoreTier(score) {
             tier: "A Rare Match",
             badge: "Strong Connection",
             video: "video/tier/Video 3.mp4",
-            cardImg: "card/tier 3.png",
-            videoTopPercent: 4.5,
-            videoLeftPercent: 58.0,
-            videoWidthPercent: 10.5,
-            videoHeightPercent: 16.5
+            cardImg: "card/tier 3.png"
         };
     } else if (score >= 63) {
         return {
@@ -29,12 +21,7 @@ export function getScoreTier(score) {
             tier: "Growing Closer",
             badge: "Something Is There",
             video: "video/tier/Video 2.mp4",
-            cardImg: "card/tier 2.png",
-            videoTopPercent: 8.5,
-            videoLeftPercent: 50.5,
-            videoWidthPercent: 12.5,
-            videoHeightPercent: 16.0
-
+            cardImg: "card/tier 2.png"
         };
     } else {
         return {
@@ -42,11 +29,7 @@ export function getScoreTier(score) {
             tier: "Different Paths",
             badge: "Curious Chemistry",
             video: "video/tier/Video 1.mp4",
-            cardImg: "card/tier 1.png",
-            videoTopPercent: 8.0,
-            videoLeftPercent: 50.5,
-            videoWidthPercent: 11.0,
-            videoHeightPercent: 17.5
+            cardImg: "card/tier 1.png"
         };
     }
 }

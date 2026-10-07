@@ -13,9 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultSection = document.getElementById('result-section');
 
     const matchVideo = document.getElementById('match-video');
-    const videoScoreOverlay = document.getElementById('video-score-overlay');
-    const videoScoreNumber = document.getElementById('video-score-number');
-    const videoPairNames = document.getElementById('video-pair-names');
 
     const pairNamesDisplay = document.getElementById('pair-names-display');
     const tierDisplay = document.getElementById('tier-display');
@@ -113,7 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (resultContainer) resultContainer.style.display = 'none';
         resultSection.style.display = 'none';
         videoSection.style.display = 'flex';
-        videoScoreOverlay.style.display = 'none';
 
         // 1. Putar Loading Video (loading.mp4 - 5.15s)
         matchVideo.src = 'video/loading/loading.mp4';
@@ -129,41 +125,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Event listener saat Loading Video Selesai
-        let overlayTriggered = false;
-
         const onLoadingEnded = () => {
             matchVideo.removeEventListener('ended', onLoadingEnded);
 
-            // 2. Transisi ke Video Tier per Kategori (Video 1..4.mp4)
+            // 2. Transisi ke Video Tier per Kategori (Video 1..4.mp4 - Murni tanpa overlay)
             matchVideo.src = tierInfo.video;
             matchVideo.currentTime = 0;
             matchVideo.play();
 
-            // Atur posisi top, left, width & height overlay video sesuai tier
-            videoScoreOverlay.style.top = `${tierInfo.videoTopPercent}%`;
-            videoScoreOverlay.style.left = `${tierInfo.videoLeftPercent || 51.5}%`;
-            if (tierInfo.videoWidthPercent) videoScoreOverlay.style.width = `${tierInfo.videoWidthPercent}%`;
-            if (tierInfo.videoHeightPercent) videoScoreOverlay.style.height = `${tierInfo.videoHeightPercent}%`;
-            videoPairNames.textContent = `${nameA.toUpperCase()} × ${nameB.toUpperCase()}`;
-
-            // Handler Detik ke-5.0 pada Video Tier
-            const onTimeUpdate = () => {
-                if (matchVideo.currentTime >= 5.0 && !overlayTriggered) {
-                    overlayTriggered = true;
-                    videoScoreOverlay.style.display = 'flex';
-                    animateScoreText(videoScoreNumber, result.finalScore);
-                }
-            };
-
             const onTierEnded = () => {
-                matchVideo.removeEventListener('timeupdate', onTimeUpdate);
                 matchVideo.removeEventListener('ended', onTierEnded);
                 
-                // 3. Pindah ke Halaman Resume Card + Breakdown Dimensi
+                // 3. Pindah ke Halaman Resume Card + Breakdown Dimensi (Card Overlay Tetap Ada)
                 renderResumePage(nameA, nameB, result, tierInfo);
             };
 
-            matchVideo.addEventListener('timeupdate', onTimeUpdate);
             matchVideo.addEventListener('ended', onTierEnded);
         };
 

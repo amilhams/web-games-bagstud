@@ -301,55 +301,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 .fullscreen-video-section video {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  /* Mempertahankan rasio aspek video dengan latar hitam elegan */
-  display: block;
-}
-
-/* Video Score Overlay Fullscreen (Tepat di Kotak Emas Cream saat Detik 5.0) */
-.fullscreen-video-section .video-score-overlay {
-  position: absolute;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  font-family: 'Cardo', serif;
-  color: #2b3542;
-  z-index: 100;
-  pointer-events: none;
-  font-size: clamp(0.7rem, 2vw, 1.4rem);
-  animation: fadeIn 0.4s ease forwards;
-  box-sizing: border-box;
-}
-
-.fullscreen-video-section .video-score-number {
-  font-size: 1.4em;
-  font-weight: 700;
-  line-height: 1;
-  color: #232c38;
-  width: 100%;
-  text-align: center;
-}
-
-.fullscreen-video-section .video-pair-names {
-  font-size: 0.5em;
-  font-weight: 600;
-  margin-top: 0.1em;
-  letter-spacing: 0.04em;
-  color: #3b4756;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-  width: 100%;
-  text-align: center;
+  /* Mempertahankan resolusi & rasio aspek asli video dengan latar hitam */
   display: block;
 }
 
@@ -565,4 +524,88 @@
 .toast.show {
   transform: translateX(-50%) translateY(0);
   opacity: 1;
+}
+
+/* ==========================================================================
+   RESPONSIVE MEDIA QUERIES (MOBILE, TABLET, DESKTOP)
+   ========================================================================== */
+
+/* Extra Small Devices / Small Phones (< 480px) */
+@media (max-width: 480px) {
+  .match-container {
+    padding: 1.25rem 0.75rem 3rem 0.75rem;
+  }
+
+  .match-card {
+    padding: 1.75rem 1.25rem;
+    border-radius: var(--radius-md);
+  }
+
+  .match-title {
+    font-size: 1.65rem;
+  }
+
+  .match-subtitle {
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .pair-names {
+    font-size: 1.25rem;
+  }
+
+  .archetype-box {
+    padding: 1rem;
+  }
+
+  .archetype-title {
+    font-size: 1.05rem;
+  }
+
+  .archetype-desc {
+    font-size: 0.85rem;
+  }
+
+  .action-group {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .btn-outline {
+    width: 100%;
+  }
+
+  /* Overlay Score Font Scaling on Mobile Cards */
+  .card-wrapper[data-tier="1"] .card-score-overlay { font-size: 0.8rem; }
+  .card-wrapper[data-tier="2"] .card-score-overlay { font-size: 0.8rem; }
+  .card-wrapper[data-tier="3"] .card-score-overlay { font-size: 0.75rem; }
+  .card-wrapper[data-tier="4"] .card-score-overlay { font-size: 0.75rem; }
+}
+
+/* Tablet & Smaller Screens (481px - 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .match-container {
+    padding: 2rem 1.5rem 3.5rem 1.5rem;
+  }
+
+  .match-card {
+    padding: 2.25rem 1.75rem;
+  }
+
+  .match-title {
+    font-size: 2rem;
+  }
+
+  .card-wrapper[data-tier="1"] .card-score-overlay { font-size: 0.9rem; }
+  .card-wrapper[data-tier="2"] .card-score-overlay { font-size: 0.9rem; }
+  .card-wrapper[data-tier="3"] .card-score-overlay { font-size: 0.85rem; }
+  .card-wrapper[data-tier="4"] .card-score-overlay { font-size: 0.85rem; }
+}
+
+/* Larger Screens & Desktop (>= 769px) */
+@media (min-width: 769px) {
+  .card-wrapper[data-tier="1"] .card-score-overlay { font-size: 1.05rem; }
+  .card-wrapper[data-tier="2"] .card-score-overlay { font-size: 1.05rem; }
+  .card-wrapper[data-tier="3"] .card-score-overlay { font-size: 0.95rem; }
+  .card-wrapper[data-tier="4"] .card-score-overlay { font-size: 0.95rem; }
 }
